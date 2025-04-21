@@ -9,4 +9,4 @@ I developed this as there was no simple way to trigger a Microsoft Power Automat
 Instructions to set up CLASP so you can push the code to Google App Script.
 1. install CLASP eg "brew install clasp" on mac
 2. clasp login
-3. clasp pull <script id>
+3. clasp push <script id>
