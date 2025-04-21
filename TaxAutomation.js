@@ -1,3 +1,4 @@
+
 /**
  * Move any email that is labelled "tax" to a Google Drive folder called Tax Deductions.
  * From there, Microsoft Power Automate can detect new files and write them to Microsoft Onedrive.
@@ -15,29 +16,67 @@ function processLabeledEmails() {
   for (var i = 0; i < threads.length; i++) {
     
     var messages = threads[i].getMessages();
-    Logger.log("Found %s Messages to process", messages.length);
+    Logger.log("Thread %s : Found %s Messages to process", i, messages.length);
 
     // process each message
     for (var j = 0; j < messages.length; j++) {
       var message = messages[j];
       var receivedDate = message.getDate();
-      Logger.log("Processing message: " + message.getSubject());
+      Logger.log("Processing Thread %s Message %s Subject: %s ", i , j, message.getSubject());
 
+  
       // process each attachment
       var attachments = messages[j].getAttachments();
-      for (var k = 0; k < attachments.length; k++) {
-        var attachment = attachments[k];
-        //TODO - add a random name to the filename
-        folder.createFile(attachment); // Save each attachment to "Deductions"
-        Logger.log("Saved: " + attachment.getName());
+      
+      // if attachments exist
+      if (attachments.length > 0) {
+        for (var k = 0; k < attachments.length; k++) {
+          var attachment = attachments[k];
+          attachment.setName(addDateToFileName(attachment.getName()));
+          folder.createFile(attachment); // Save each attachment to "Deductions"
+          Logger.log("Saved File: %s", attachment.getName());
+        } 
+      } else { // if attachments dont exist
+        Logger.log("No attachments for message %s", message.getSubject() );
+        // TODO: save the email
       }
 
     }
   }
   GmailApp.sendEmail("charles.poulsen@gmail.com", "Tax Automation Ran " + i +  " messages", "NA" );
-
-  //test
 }
 
+/**.Helper function to add date to filename in the format "_dd-mm-yyyy" before the dot */
+function addDateToFileName(filename) {
+  // Get current date in dd-mm-yyyy format
+  var now = new Date();
+  var dd = String(now.getDate()).padStart(2, '0');
+  var mm = String(now.getMonth() + 1).padStart(2, '0');
+  var yyyy = now.getFullYear();
+  var dateStr = `${dd}-${mm}-${yyyy}`;
+
+  // Find the last dot in the filename
+  var dotIndex = filename.lastIndexOf('.');
+
+  // If there's no extension, just append the date
+  if (dotIndex === -1) {
+    return `${filename}_${dateStr}`;
+  }
+
+  // Otherwise, insert the date before the extension
+  var name = filename.substring(0, dotIndex);
+  var ext = filename.substring(dotIndex); // includes the dot
+  return `${name}_${dateStr}${ext}`;
+}
+
+
+/** Create a trigger to run processLabeledEmails every night */
+function createMidnightTrigger() {
+ ScriptApp.newTrigger("processLabeledEmails") // Replace with your function name
+    .timeBased()
+    .everyDays(1)
+    .atHour(0) // 0 = midnight
+    .create();
+}
 
 
