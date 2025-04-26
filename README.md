@@ -30,9 +30,15 @@ clone-script <scriptID>`
 3. send the code to the script in appscript `clasp push`
 
 ### Set the code to run
-Heres how to manually set up the trigger.
+Use a Trigger to get the code to run every 24 hours (or however regularly you wish)
 1. Go to google app script https://script.google.com/
-1. Go to your script 
-1. Go to code > choose the createMidnightTrigger and press run. This will create the trigger to run every night.
+1. Go to your script project. Create the code by either
+    1. Manually
+        1. Click on Triggers on the left
+        1. Click Add Trigger
+        1. Configure Details
+    1. Automatically 
+        1. Go to code
+        1. choose the createMidnightTrigger press run. This will create the trigger to run every night.
 
 Not sure how to create it from the command line yet, but I'm sure its possible.
