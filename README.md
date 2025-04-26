@@ -1,7 +1,7 @@
 # GmailTaxAutomation
 A Google App Script automation which will move any emails and attachments labelled with a "tax" label, into a Google Drive folder called "Tax Deductions". This will run as a batch job every 24 hours.
 
-I developed this because I wanted to put any gmail mails/attachments with "tax" labelled into Microsoft Onedrive. To work around some limitations in the Microsoft Power Automate connector for gmail,
+I developed this because I wanted to put any gmail mails/attachments with "tax" labelled into Microsoft Onedrive. To work around some limitations in the Microsoft Power Automate connector for gmail:
 1) there is way to trigger a Microsoft Power Automate flow from a gmail label being applied
 2) there is no "get messages" action. 
 
