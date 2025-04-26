@@ -20,43 +20,55 @@ function processLabeledEmails() {
 
     // process each message
     for (var j = 0; j < messages.length; j++) {
-      var message = messages[j];
-      var receivedDate = message.getDate();
+      let message = messages[j];
+      let receivedDate = message.getDate();
       Logger.log("Processing Thread %s Message %s Subject: %s ", i , j, message.getSubject());
 
-  
-      // process each attachment
-      var attachments = messages[j].getAttachments();
+      // save email as .eml file
+      let eml = savetoEml(message);
+      folder.createFile(eml);
       
-      // if attachments exist
-      if (attachments.length > 0) {
-        for (var k = 0; k < attachments.length; k++) {
-          var attachment = attachments[k];
-          attachment.setName(addDateToFileName(attachment.getName()));
-          folder.createFile(attachment); // Save each attachment to "Deductions"
-          Logger.log("Saved File: %s", attachment.getName());
-        } 
-      } else { // if attachments dont exist
-        Logger.log("No attachments for message %s", message.getSubject() );
-        // TODO: save the email
-      }
+      // save attachements
+      let attachments = messages[j].getAttachments();
+      for (var k = 0; k < attachments.length; k++) {
+        let attachment = attachments[k];
+        attachment.setName(addDateToFileName(attachment.getName()));
+        folder.createFile(attachment); // Save each attachment to "Deductions"
+        Logger.log("Saved File: %s", attachment.getName());
+      } 
+  
 
     }
   }
   GmailApp.sendEmail("charles.poulsen@gmail.com", "Tax Automation Ran " + i +  " messages", "NA" );
 }
 
+/**
+ * Convert an email message to a file
+ */
+function savetoEml(message) {
+      let subject = message.getSubject().replace(/[\\/:*?"<>|]/g, '');
+      let date = Utilities.formatDate(message.getDate(), Session.getScriptTimeZone(), "yyyy-MM-dd_HH-mm-ss");
+      let emlName = `${subject} - ${date}.eml`;
+      let rawContent = message.getRawContent();
+
+      // Create a blob with the correct MIME type for .eml
+      let blob = Utilities.newBlob(rawContent, "message/rfc822", emlName);
+      Logger.log("Created email file: %s", blob.getName());
+      return blob;
+}
+
 /**.Helper function to add date to filename in the format "_dd-mm-yyyy" before the dot */
 function addDateToFileName(filename) {
   // Get current date in dd-mm-yyyy format
-  var now = new Date();
-  var dd = String(now.getDate()).padStart(2, '0');
-  var mm = String(now.getMonth() + 1).padStart(2, '0');
-  var yyyy = now.getFullYear();
-  var dateStr = `${dd}-${mm}-${yyyy}`;
+  let now = new Date();
+  let dd = String(now.getDate()).padStart(2, '0');
+  let mm = String(now.getMonth() + 1).padStart(2, '0');
+  let yyyy = now.getFullYear();
+  let dateStr = `${dd}-${mm}-${yyyy}`;
 
   // Find the last dot in the filename
-  var dotIndex = filename.lastIndexOf('.');
+  let dotIndex = filename.lastIndexOf('.');
 
   // If there's no extension, just append the date
   if (dotIndex === -1) {
@@ -64,8 +76,8 @@ function addDateToFileName(filename) {
   }
 
   // Otherwise, insert the date before the extension
-  var name = filename.substring(0, dotIndex);
-  var ext = filename.substring(dotIndex); // includes the dot
+  let name = filename.substring(0, dotIndex);
+  let ext = filename.substring(dotIndex); // includes the dot
   return `${name}_${dateStr}${ext}`;
 }
 
