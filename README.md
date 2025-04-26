@@ -11,8 +11,13 @@ By putting the files into Google Drive, I can run a Power Automate flow to pick 
 
 ## Setup App script
 
+### Setup git
+E.g on mac, `brew install git`
+
 ### Get this code
 Use git clone to pull this code
+
+`git clone https://github.com/chazwoza/GmailTaxAutomation.git`
 
 ### Setup Clasp
 You should setup CLASP so you can send this code back/forward to google appscript from the command line
